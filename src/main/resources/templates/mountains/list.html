@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('山一覧 - My Route &amp; Mountain Log')}">
+</head>
+<body>
+    <div th:replace="~{fragments/common :: header}"></div>
+
+    <main class="container py-5">
+        <div class="row align-items-center mb-4">
+            <div class="col-md-4">
+                <h2 class="fw-bold mb-0">
+                    <i class="bi bi-geo-fill me-2 text-success"></i>山一覧
+                    <span class="fs-6 text-muted ms-2" th:if="${mountains}" th:text="'全 ' + ${mountains.totalElements} + ' 件'"></span>
+                </h2>
+            </div>
+            
+            <div class="col-md-8 text-md-end mt-3 mt-md-0">
+                <button class="btn btn-outline-success" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse" aria-expanded="false" aria-controls="searchCollapse">
+                    <i class="bi bi-funnel me-1"></i> 絞り込み検索
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Panel Collapse -->
+        <div class="collapse mb-4" id="searchCollapse" th:classappend="${keyword != null or prefecture != null or difficulty != null or elevationFilter != null} ? 'show' : ''">
+            <div class="card card-body bg-light border-0 shadow-sm rounded-4">
+                <form th:action="@{/mountains}" method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted fw-bold mb-1">キーワード</label>
+                        <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="山名など">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted fw-bold mb-1">都道府県</label>
+                        <select name="prefecture" class="form-select">
+                            <option value="">すべて</option>
+                            <option value="北海道" th:selected="${prefecture == '北海道'}">北海道</option>
+                            <option value="青森" th:selected="${prefecture == '青森'}">青森県</option>
+                            <option value="群馬" th:selected="${prefecture == '群馬'}">群馬県</option>
+                            <option value="東京" th:selected="${prefecture == '東京'}">東京都</option>
+                            <option value="神奈川" th:selected="${prefecture == '神奈川'}">神奈川県</option>
+                            <option value="山梨" th:selected="${prefecture == '山梨'}">山梨県</option>
+                            <option value="長野" th:selected="${prefecture == '長野'}">長野県</option>
+                            <option value="岐阜" th:selected="${prefecture == '岐阜'}">岐阜県</option>
+                            <option value="富山" th:selected="${prefecture == '富山'}">富山県</option>
+                            <option value="静岡" th:selected="${prefecture == '静岡'}">静岡県</option>
+                            <option value="大阪" th:selected="${prefecture == '大阪'}">大阪府</option>
+                            <option value="兵庫" th:selected="${prefecture == '兵庫'}">兵庫県</option>
+                            <option value="福岡" th:selected="${prefecture == '福岡'}">福岡県</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted fw-bold mb-1">難易度</label>
+                         <select name="difficulty" class="form-select">
+                            <option value="">すべて</option>
+                            <option value="EASY" th:selected="${difficulty == 'EASY'}">EASY</option>
+                            <option value="MODERATE" th:selected="${difficulty == 'MODERATE'}">MODERATE</option>
+                            <option value="HARD" th:selected="${difficulty == 'HARD'}">HARD</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted fw-bold mb-1">標高</label>
+                        <select name="elevationFilter" class="form-select">
+                            <option value="">すべて</option>
+                            <option value="UNDER_1000" th:selected="${elevationFilter == 'UNDER_1000'}">1000m未満</option>
+                            <option value="1000_TO_2000" th:selected="${elevationFilter == '1000_TO_2000'}">1000m - 2000m</option>
+                            <option value="2000_TO_3000" th:selected="${elevationFilter == '2000_TO_3000'}">2000m - 3000m</option>
+                            <option value="OVER_3000" th:selected="${elevationFilter == 'OVER_3000'}">3000m以上</option>
+                        </select>
+                    </div>
+                    <div class="col-12 text-end">
+                        <a th:href="@{/mountains}" class="btn btn-link text-muted me-2" th:if="${keyword != null or prefecture != null or difficulty != null or elevationFilter != null}">クリア</a>
+                        <button type="submit" class="btn btn-success px-4"><i class="bi bi-search me-1"></i> 検索</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- List Format -->
+        <div class="list-group shadow-sm mb-5">
+            <a th:href="@{/mountains/{id}(id=${mountain.mountainId})}" 
+               class="list-group-item list-group-item-action p-0 d-flex align-items-stretch overflow-hidden border-0 border-bottom bg-white"
+               th:each="mountain : ${mountains}" style="min-height: 100px;">
+                
+                <!-- Image -->
+                <div style="width: 140px; flex-shrink: 0;" class="bg-light position-relative">
+                     <img th:if="${mountain.imageUrl != null}" th:src="${mountain.imageUrl}" class="w-100 h-100 object-fit-cover" alt="Mountain">
+                     <img th:if="${mountain.imageUrl == null}" src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80" class="w-100 h-100 object-fit-cover" alt="Default">
+                     <span class="position-absolute top-0 start-0 m-1 badge bg-success shadow-sm" style="font-size: 0.6rem;" th:if="${mountain.isHyakumeizan}">百名山</span>
+                </div>
+
+                <!-- Body -->
+                <div class="p-3 flex-grow-1 d-flex flex-column justify-content-center">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div class="text-muted small">
+                            <i class="bi bi-geo-alt me-1"></i><span th:text="${mountain.prefecture}">Pref</span>
+                        </div>
+                        <div class="d-none d-sm-block">
+                             <span class="badge rounded-pill" 
+                                   th:classappend="${mountain.difficulty == 'EASY' ? 'bg-info bg-opacity-25 text-primary' : (mountain.difficulty == 'MODERATE' ? 'bg-warning bg-opacity-25 text-warning' : 'bg-danger bg-opacity-25 text-danger')}"
+                                   th:text="${mountain.difficulty}">EASY</span>
+                        </div>
+                    </div>
+                    
+                    <h5 class="fw-bold mb-0 text-dark" th:text="${mountain.name}">Mt. Name</h5>
+                    <div class="text-muted small mb-2" th:text="${mountain.nameEn}">Mt. Name En</div>
+                    
+                    <div class="d-flex gap-3 text-muted small mt-auto">
+                         <span><i class="bi bi-arrow-up-right me-1"></i><span th:text="${mountain.elevation} + 'm'"></span></span>
+                         <span class="d-none d-sm-inline ms-2" th:if="${mountain.typicalDurationMinutes}"><i class="bi bi-clock me-1"></i><span th:text="${mountain.typicalDurationMinutes} + '分'"></span></span>
+                    </div>
+                    <!-- Mobile Difficulty Badge -->
+                    <div class="d-block d-sm-none mt-2">
+                        <span class="badge rounded-pill" 
+                              th:classappend="${mountain.difficulty == 'EASY' ? 'bg-info bg-opacity-25 text-primary' : (mountain.difficulty == 'MODERATE' ? 'bg-warning bg-opacity-25 text-warning' : 'bg-danger bg-opacity-25 text-danger')}"
+                              th:text="${mountain.difficulty}">EASY</span>
+                    </div>
+                </div>
+                
+                <!-- Chevron -->
+                <div class="d-flex align-items-center px-3 text-muted bg-light bg-opacity-10 d-none d-md-flex">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+            </a>
+            
+             <!-- Empty State -->
+            <div th:if="${mountains.isEmpty()}" class="p-5 text-center text-muted border rounded bg-white">
+                該当する山が見つかりませんでした。
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div th:if="${mountains.totalPages > 1}" class="d-flex justify-content-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination shadow-sm">
+                    <li class="page-item" th:classappend="${mountains.first} ? 'disabled'">
+                        <a class="page-link border-0" th:href="@{/mountains(page=${mountains.number - 1}, keyword=${keyword}, prefecture=${prefecture}, difficulty=${difficulty}, elevationFilter=${elevationFilter})}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, mountains.totalPages - 1)}"
+                        th:classappend="${i == mountains.number} ? 'active'"
+                        th:if="${i >= mountains.number - 2 and i <= mountains.number + 2}">
+                        <a class="page-link border-0" th:href="@{/mountains(page=${i}, keyword=${keyword}, prefecture=${prefecture}, difficulty=${difficulty}, elevationFilter=${elevationFilter})}" th:text="${i + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${mountains.last} ? 'disabled'">
+                        <a class="page-link border-0" th:href="@{/mountains(page=${mountains.number + 1}, keyword=${keyword}, prefecture=${prefecture}, difficulty=${difficulty}, elevationFilter=${elevationFilter})}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+    </main>
+
+    <div th:replace="~{fragments/common :: footer}"></div>
+    <div th:replace="~{fragments/common :: scripts}"></div>
+</body>
+</html>

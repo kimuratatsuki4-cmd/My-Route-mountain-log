@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/common :: head(#{activity.form.title} + ' - My Route &amp; Mountain Log')}"></th:block>
+</head>
+<body>
+
+    <!-- Include Header Fragment -->
+    <div th:replace="~{fragments/common :: header}"></div>
+
+    <main class="container" style="padding-top: 50px; padding-bottom: 80px;">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="form-card">
+                    <div class="card-header text-center">
+                        <h2 th:text="#{activity.form.title}">Create New Log</h2>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Global Error Message -->
+                        <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+
+                        <form th:action="@{/activities}" th:object="${activityForm}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                            
+                            <!-- ==========================================
+                                 山マスタ検索セクション
+                                 山を選択すると距離・標高等がフォームに自動入力される
+                                 ========================================== -->
+                            <h5 class="form-section-title"><i class="bi bi-search me-2"></i><span th:text="#{activity.form.mountainSearch}">Search Mountain</span></h5>
+
+                            <!-- mountainId を送信するための隠しフィールド -->
+                            <input type="hidden" id="mountainId" th:field="*{mountainId}" />
+
+                            <div class="mb-4">
+                                <label for="mountainSearchInput" class="form-label" th:text="#{activity.form.label.mountainSearch}">Mountain Name / Prefecture</label>
+                                <!-- 
+                                    mountain-search-wrapper: 検索ボックスと検索結果ドロップダウンのコンテナ
+                                    検索結果はこのコンテナ内に絶対配置される(position: absolute)
+                                -->
+                                <div class="mountain-search-wrapper">
+                                    <input type="text" class="form-control" id="mountainSearchInput" 
+                                           th:placeholder="#{activity.form.placeholder.mountainSearch}" autocomplete="off">
+                                    <!-- 
+                                        mountain-search-results: 検索結果のドロップダウン
+                                        初期状態は display:none、JavaScriptで .show クラスを付与して表示
+                                    -->
+                                    <div id="mountainSearchResults" class="mountain-search-results"></div>
+                                </div>
+                                <div class="form-text" style="font-size: 0.75rem; color: var(--color-text-muted);" th:text="#{activity.form.mountainSearchHint}">
+                                    Type 2+ characters to search. Stats will auto-fill.
+                                </div>
+                                <!-- 
+                                    selected-mountain-badge: 山が選択されたら表示される情報バッジ
+                                    非選択時は display:none
+                                -->
+                                <div id="selectedMountainBadge" class="selected-mountain-badge" style="display: none;">
+                                    <div class="mountain-badge-info">
+                                        <div class="mountain-badge-name" id="selectedMountainName"></div>
+                                        <div class="mountain-badge-detail" id="selectedMountainDetail"></div>
+                                    </div>
+                                    <button type="button" class="mountain-badge-clear" id="clearMountainBtn" title="Clear selection">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Basic Information -->
+                            <h5 class="form-section-title" th:text="#{activity.form.basicInfo}">Basic Info</h5>
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label"><span th:text="#{activity.form.label.title}">Title</span> <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}" th:placeholder="#{activity.form.placeholder.title}" 
+                                       th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="activityDate" class="form-label"><span th:text="#{activity.form.label.date}">Date</span> <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="activityDate" th:field="*{activityDate}"
+                                       th:classappend="${#fields.hasErrors('activityDate')} ? 'is-invalid'">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('activityDate')}" th:errors="*{activityDate}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="location" class="form-label" th:text="#{activity.form.label.location}">Location</label>
+                                <input type="text" class="form-control" id="location" th:field="*{location}" th:placeholder="#{activity.form.placeholder.location}"
+                                       th:classappend="${#fields.hasErrors('location')} ? 'is-invalid'">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="description" class="form-label" th:text="#{activity.form.label.description}">Description / Memo</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="4" th:placeholder="#{activity.form.placeholder.description}"></textarea>
+                            </div>
+
+                            <!-- Detailed Stats -->
+                            <h5 class="form-section-title" th:text="#{activity.form.stats}">Stats &amp; Details</h5>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="distanceKm" class="form-label" th:text="#{activity.form.label.distance}">Distance (km)</label>
+                                    <div class="input-group">
+                                        <input type="number" step="0.01" class="form-control" id="distanceKm" th:field="*{distanceKm}" placeholder="0.00">
+                                        <span class="input-group-text">km</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="durationMinutes" class="form-label" th:text="#{activity.form.label.duration}">Duration (min)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="durationMinutes" th:field="*{durationMinutes}" placeholder="0">
+                                        <span class="input-group-text">min</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="elevationGain" class="form-label" th:text="#{activity.form.label.elevGain}">Elevation Gain (m)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="elevationGain" th:field="*{elevationGain}" placeholder="0">
+                                        <span class="input-group-text">m</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="maxElevation" class="form-label" th:text="#{activity.form.label.maxElev}">Max Elevation (m)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="maxElevation" th:field="*{maxElevation}" placeholder="0">
+                                        <span class="input-group-text">m</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="paceNotes" class="form-label" th:text="#{activity.form.label.paceNotes}">Pace Notes</label>
+                                <input type="text" class="form-control" id="paceNotes" th:field="*{paceNotes}" th:placeholder="#{activity.form.placeholder.paceNotes}">
+                            </div>
+
+                            <!-- Image Upload -->
+                            <h5 class="form-section-title" th:text="#{activity.form.photos}">Photos</h5>
+
+                            <div class="mb-5">
+                                <label for="imageFile" class="form-label" th:text="#{activity.form.label.uploadPhoto}">Upload Main Photo</label>
+                                <input class="form-control" type="file" id="imageFile" th:field="*{imageFile}" accept="image/*">
+                                <div class="form-text" style="font-size: 0.75rem; color: var(--color-text-muted);" th:text="#{activity.form.photoHint}">Supported formats: JPG, PNG. Max size: 5MB.</div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="d-flex justify-content-end gap-2">
+                                <a th:href="@{/activities}" class="btn btn-outline-custom" th:text="#{activity.form.cancel}">Cancel</a>
+                                <button class="btn btn-primary-custom" type="submit" th:text="#{activity.form.save}">Save Log</button>
+                            </div>
+                        
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Include Footer Fragment -->
+    <div th:replace="~{fragments/common :: footer}"></div>
+
+    <!-- Include Scripts Fragment -->
+    <div th:replace="~{fragments/common :: scripts}"></div>
+
+    <!-- 山マスタ検索の設定と外部スクリプトの読み込み -->
+    <script th:inline="javascript">
+        // 外部のJavaScriptファイルにThymeleafの翻訳メッセージを渡すための設定オブジェクト
+        const mountainSearchConfig = {
+            notFoundMessage: /*[[#{activity.form.mountainNotFound}]]*/ 'No mountains found'
+        };
+    </script>
+    <script th:src="@{/js/mountain-search.js}"></script>
+</body>
+</html>

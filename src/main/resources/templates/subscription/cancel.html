@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:replace="~{fragments/common :: head('Cancel Subscription')}"></div>
+</head>
+<body>
+    <div th:replace="~{fragments/common :: header}"></div>
+
+    <main class="container my-5" style="max-width: 600px;">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5 text-center">
+                <div class="mb-4">
+                    <i class="bi bi-exclamation-circle text-warning display-4"></i>
+                </div>
+                
+                <h2 class="mb-4" th:text="#{subscription.cancel.title}">Cancel Subscription?</h2>
+                
+                <p class="mb-4" th:text="#{subscription.cancel.warning}">Are you sure you want to cancel your Premium subscription? You will lose access to unlimited logs and advanced statistics immediately.</p>
+
+                <div class="alert alert-warning">
+                    <strong>Note:</strong> <span th:text="#{subscription.cancel.note}">Your subscription will be cancelled immediately...</span>
+                </div>
+
+                <div class="d-grid gap-2 mt-5">
+                    <form th:action="@{/subscription/delete}" method="post">
+                         <button type="submit" class="btn btn-danger btn-lg w-100 mb-2">
+                            <span th:text="#{subscription.cancel.btn.yes}">Yes, Cancel My Subscription</span>
+                         </button>
+                    </form>
+                    <a href="/" class="btn btn-outline-secondary">
+                        <span th:text="#{subscription.cancel.btn.no}">No, Keep My Subscription</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/common :: footer}"></div>
+    <div th:replace="~{fragments/common :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/common :: head('My Route &amp; Mountain Log - Home')}">
+</head>
+<body>
+    <div id="login-animation-overlay" class="d-flex justify-content-center">
+        <div class="footprint-container">
+            <img th:src="@{/images/footprint-left.svg}" class="footprint left" alt="Footprint">
+            <img th:src="@{/images/footprint-right.svg}" class="footprint right" alt="Footprint">
+            <img th:src="@{/images/footprint-left.svg}" class="footprint left" alt="Footprint">
+            <img th:src="@{/images/footprint-right.svg}" class="footprint right" alt="Footprint">
+            <img th:src="@{/images/footprint-left.svg}" class="footprint left" alt="Footprint">
+        </div>
+        <div class="welcome-text" th:text="#{home.stats.welcome}">Let's enjoy mountain climbing!</div>
+    </div>
+
+    <div th:replace="~{fragments/common :: header}"></div>
+
+
+    <div class="container mt-4">
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${infoMessage}" class="alert alert-info alert-dismissible fade show" role="alert">
+            <span th:text="${infoMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+
+    <section class="hero-section">
+        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80" alt="Hiking">
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80" alt="Mountains">
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80" alt="Adventure">
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+
+        <div class="hero-overlay">
+            <div>
+                <h1 th:text="#{home.hero.title}">Explore Your World</h1>
+                <p th:text="#{home.hero.subtitle}">Record your mountain climbing activities and share your experiences.</p>
+                <div sec:authorize="isAnonymous()">
+                    <a th:href="@{/auth/register}" class="hero-cta hero-cta-accent" th:text="#{home.hero.cta.register}">Get Started</a>
+                </div>
+                <div sec:authorize="isAuthenticated()">
+                    <a th:href="@{/activities/new}" class="hero-cta" th:text="#{home.hero.cta.record}">Record Activity</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <div class="container my-5 text-center">
+    <div class="row justify-content-center g-4">
+        <div class="col-6 col-md-4 col-lg-3">
+            <a th:href="@{/mountains}" class="btn-quick-action btn-find-mountain">
+                <i class="bi bi-search me-2"></i><span th:text="#{home.quick.find}">Find Mountain</span>
+            </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+            <a th:href="@{/activities/new}" class="btn-quick-action btn-record-log">
+                <i class="bi bi-pencil-square me-2"></i><span th:text="#{home.quick.record}">Record Log</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+    <section class="content-section" style="background-color: var(--color-bg-soft);" sec:authorize="hasRole('PREMIUM')" th:if="${stats != null && stats.totalActivities > 0}">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h2 class="section-title" th:text="#{home.stats.title}">Your Activity Stats</h2>
+                <p class="section-subtitle" th:text="#{home.stats.subtitle}">A summary of your mountain climbing achievements.</p>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-title" th:text="#{home.stats.climbs}">Total Climbs</div>
+                        <div class="stat-number count-up" th:data-target="${stats.totalActivities}">0</div>
+                        <div class="stat-subtitle" th:text="#{home.stats.climbs.unit}">mountains</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card accent">
+                        <div class="stat-title" th:text="#{home.stats.elevation}">Total Elevation</div>
+                        <div class="stat-number"><span class="count-up" th:data-target="${stats.totalElevation}">0</span><span class="stat-subtitle ms-1">m</span></div>
+                        <div class="stat-subtitle" th:text="#{activity.list.stats.verticalGain}">Vertical Gain</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card info">
+                        <div class="stat-title" th:text="#{home.stats.distance}">Total Distance</div>
+                        <div class="stat-number"><span class="count-up" th:data-target="${stats.totalDistance}">0</span><span class="stat-subtitle ms-1">km</span></div>
+                        <div class="stat-subtitle" th:text="#{activity.list.stats.distanceWalked}">Distance Walked</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="content-section" sec:authorize="hasRole('PREMIUM')">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h2 class="section-title" th:text="#{home.map.title}">Hyakumeizan Map</h2>
+                <p class="section-subtitle" th:text="#{home.map.subtitle}">Explore the 100 Famous Japanese Mountains</p>
+            </div>
+            
+
+            <div id="map" class="shadow-sm" style="height: 600px; width: 100%; border-radius: 12px; z-index: 1;"></div>
+            
+
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+             integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+             crossorigin=""/>
+        </div>
+    </section>
+
+    <section class="content-section bg-white" sec:authorize="hasRole('PREMIUM')" th:if="${randomActivities != null and !randomActivities.empty}">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title" th:text="#{home.randomActivities.title}">Memories of Your Climbs</h2>
+                <p class="section-subtitle" th:text="#{home.randomActivities.subtitle}">Looking back at some of your past adventures.</p>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-4" th:each="activity : ${randomActivities}">
+                    <div class="card h-100 shadow-sm border-0 mountain-card">
+                        <img th:src="${activity.imageName != null ? '/images/' + activity.imageName : '/images/default-mountain.jpg'}" 
+                             class="card-img-top" th:alt="${activity.title}" style="height: 200px; object-fit: cover;"
+                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80';">
+                        
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-1" th:text="${activity.title}">Activity Title</h5>
+                            <p class="text-muted small mb-3">
+                                <i class="bi bi-calendar-event me-1"></i><span th:text="${#dates.format(activity.activityDate, 'yyyy-MM-dd')}">2023-01-01</span>
+                            </p>
+                            
+                            <p class="card-text text-truncate-2" th:text="${activity.description}" style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">Summary of the activity.</p>
+                            
+                            <div class="d-flex justify-content-between text-muted small mb-3" th:if="${activity.activityDetail != null}">
+                                <span th:if="${activity.activityDetail.durationMinutes != null}">
+                                    <i class="bi bi-clock me-1"></i><span th:text="${activity.activityDetail.durationMinutes} + ' ' + #{home.randomActivities.duration}"></span>
+                                </span>
+                                <span th:if="${activity.activityDetail.elevationGain != null}">
+                                    <i class="bi bi-arrow-up-right me-1"></i><span th:text="${activity.activityDetail.elevationGain} + ' ' + #{home.randomActivities.elevation}"></span>
+                                </span>
+                            </div>
+                            
+                            <a th:href="@{/activities/{id}(id=${activity.activityId})}" class="btn btn-outline-primary w-100" th:text="#{home.randomActivities.detail}">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section bg-light" sec:authorize="hasRole('PREMIUM')" th:if="${recommendedMountains != null and !recommendedMountains.empty}">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title" th:text="#{home.recommended.title}">Recommended for You</h2>
+                <p class="section-subtitle" th:text="#{home.recommended.subtitle}">Discover your next adventure based on your history and level.</p>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-4" th:each="mountain : ${recommendedMountains}">
+                    <div class="card h-100 shadow-sm border-0 mountain-card">
+                        <img th:src="${mountain.imageUrl != null ? mountain.imageUrl : '/images/default-mountain.jpg'}" 
+                             class="card-img-top" th:alt="${mountain.name}" style="height: 200px; object-fit: cover;"
+                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80';">
+                        
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-1" th:text="${mountain.name}">Mt. Fuji</h5>
+                            <p class="text-muted small mb-3" th:text="|${mountain.prefecture} • ${mountain.elevation}m|">Location • Elevation</p>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="badge" 
+                                      th:classappend="${mountain.difficulty == 'EASY' ? 'bg-success' : (mountain.difficulty == 'MODERATE' ? 'bg-warning' : (mountain.difficulty == 'HARD' ? 'bg-danger' : 'bg-dark'))}"
+                                      th:text="${mountain.difficulty}">EASY</span>
+                                <span th:if="${mountain.isHyakumeizan}" class="badge bg-primary" th:text="#{home.recommended.hyakumeizan}">百名山</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted small mb-3">
+                                <span><i class="bi bi-clock me-1"></i><span th:text="|${mountain.typicalDurationMinutes} min|"></span></span>
+                                <span><i class="bi bi-arrow-up-right me-1"></i><span th:text="|${mountain.typicalElevationGain} m|"></span></span>
+                            </div>
+                            <a th:href="@{/mountains/{id}(id=${mountain.mountainId})}" class="btn btn-outline-primary w-100" th:text="#{home.recommended.detail}">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="content-section" style="background-color: var(--color-bg-soft);">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4 fade-in-up">
+                    <div class="feature-card">
+                        <div class="feature-card-icon">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <h4 th:text="#{home.feature1.title}">Track Your Hikes</h4>
+                        <p th:text="#{home.feature1.desc}">Log elevation gain, distance, and duration for every hike you conquer.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 fade-in-up" style="animation-delay: 0.15s;">
+                    <div class="feature-card">
+                        <div class="feature-card-icon">
+                            <i class="bi bi-map"></i>
+                        </div>
+                        <h4 th:text="#{home.feature2.title}">Review Your Route</h4>
+                        <p th:text="#{home.feature2.desc}">Save your route details and review them anytime to improve your performance.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 fade-in-up" style="animation-delay: 0.3s;">
+                    <div class="feature-card">
+                        <div class="feature-card-icon">
+                            <i class="bi bi-camera"></i>
+                        </div>
+                        <h4 th:text="#{home.feature3.title}">Share Your Adventures</h4>
+                        <p th:text="#{home.feature3.desc}">Keep your memories alive by storing photos and notes from your trips.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div th:replace="~{fragments/common :: footer}"></div>
+
+    <div th:replace="~{fragments/common :: scripts}"></div>
+
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <script th:inline="javascript">
+        const mapConfig = {
+            msgClimbed: /*[[#{home.map.legend.climbed}]]*/ 'Climbed',
+            msgUnclimbed: /*[[#{home.map.legend.unclimbed}]]*/ 'Unclimbed',
+            msgClimbedPopup: /*[[#{home.map.popup.climbedDate}]]*/ 'Climbed:',
+            msgDetail: /*[[#{home.map.popup.detail}]]*/ 'View Details'
+        };
+    </script>
+    <script th:src="@{/js/map-init.js}"></script>
+    <script th:src="@{/js/login-animation.js}"></script>
+    <script th:src="@{/js/stats-animation.js}"></script>
+</body>
+</html>

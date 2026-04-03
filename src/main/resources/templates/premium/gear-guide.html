@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/common :: head(#{premium.guide.title} + ' - ' + #{app.name})}">
+</head>
+<body class="bg-light">
+    <div th:replace="~{fragments/common :: header}"></div>
+
+    <main class="container-fluid py-5 overflow-hidden">
+        <!-- プレミアムヘッダー -->
+        <div class="row mb-4 justify-content-center px-3">
+            <div class="col-12 text-center">
+                <h1 class="fw-bold mb-4" style="color: #2c3e50;" th:text="#{premium.guide.title}">はじめての「三種の神器」コンシェルジュ</h1>
+                <p class="text-muted lead fw-medium pb-2 border-bottom border-2 border-primary border-opacity-10 d-inline-block px-4" th:utext="#{premium.guide.subtitle}">
+                    登山において最も重要かつ高価な「登山靴・バックパック・レインウェア」。<br class="d-none d-md-block">
+                    公式コンシェルジュが、安全で失敗しない選び方と「間違いのない定番品」をご案内します。
+                </p>
+                <div class="alert alert-info border-0 shadow-sm mt-4 text-start position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(204,242,255,1) 0%, rgba(230,248,255,1) 100%);">
+                    <div class="position-absolute opacity-10" style="right: -20px; top: -10px; transform: rotate(15deg);">
+                        <i class="bi bi-shield-check" style="font-size: 8rem; color: #17a2b8;"></i>
+                    </div>
+                    <div class="d-flex position-relative z-1">
+                        <i class="bi bi-shield-check fs-2 text-info me-3 mt-1"></i>
+                        <div>
+                            <h5 class="alert-heading fw-bold text-dark" th:text="#{premium.guide.alert.title}">安さだけで選ばない、安全のための投資を</h5>
+                            <p class="mb-0 text-dark opacity-75" th:text="#{premium.guide.alert.desc}">自然の中では、天候や環境の急変により命の危険に晒されることがあります。三種の神器はあなたの身を守る命綱です。「後悔しない確かな品質」を選ぶことが、登山を長く安全に楽しむための第一歩です。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrapカルーセル（全体を囲む要素） -->
+        <div id="gearCarousel" class="carousel slide pb-5 text-center" data-bs-ride="carousel">
+            <!-- スライドのラッパー -->
+            <div class="carousel-inner">
+
+                <!-- 1. 登山靴 -->
+                <div class="carousel-item active text-center">
+                    <div class="card h-100 mx-auto border-0 shadow rounded-4 overflow-hidden border-top border-success border-4 d-flex flex-column" style="min-height: 500px; max-width: 1200px;">
+                        <div class="bg-white px-4 py-4 border-bottom d-flex align-items-center">
+                            <div class="bg-success text-white rounded-4 shadow-sm d-flex align-items-center justify-content-center me-3" style="width: 56px; height: 56px; background: linear-gradient(135deg, #28a745, #1e7e34) !important;">
+                                <i class="bi bi-symmetry-vertical fs-3"></i> <!-- 足を表すようなアイコン -->
+                            </div>
+                            <div>
+                                <span class="badge bg-danger mb-1 shadow-sm"><i class="bi bi-star-fill me-1"></i><span th:text="#{premium.guide.badge.required}">必須</span></span>
+                                <h3 class="fw-bold text-dark mb-0 d-flex flex-column">
+                                    <span th:text="#{premium.guide.shoes.title}">登山靴</span> <span class="fs-6 text-muted fw-normal" th:text="#{premium.guide.shoes.subtitle}">(トレッキングブーツ)</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="card-body p-4 p-md-5 bg-white d-flex flex-column">
+                            
+                            <!-- なぜ必要と選ぶポイントをレスポンシブに（モバイルで縦並び） -->
+                            <div class="row mb-4 flex-grow-1">
+                                <!-- 左: なぜ必要なの？ -->
+                                <div class="col-12 col-md-6 pe-md-3 d-flex flex-column align-items-center text-center">
+                                    <h5 class="fw-bold text-dark mb-3 d-flex flex-column align-items-center">
+                                        <span class="bg-light text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 32px; height: 32px;"><i class="bi bi-question-lg"></i></span>
+                                        <span class="fs-6 fw-bold" th:text="#{premium.guide.why}">なぜ必要なの？</span>
+                                    </h5>
+                                    <p class="text-body-secondary small" th:text="#{premium.guide.shoes.why}">
+                                        足首を保護し、悪路での転倒や疲労を防ぐために日帰り登山でも必須です。スニーカーでは滑りやすく、木の根や小石で足を痛める原因になります。
+                                    </p>
+                                    <div class="mt-auto w-100 px-3 pb-2 d-none d-md-block">
+                                        <img th:src="@{/images/guide-shoes.png}" alt="登山靴のアニメ風イラスト: なぜ必要なのか" class="img-fluid rounded-3 shadow-sm border" style="max-height: 400px; object-fit: cover; width: 100%;">
+                                    </div>
+                                </div>
+                                
+                                <!-- 右: 選ぶポイント -->
+                                <div class="col-12 col-md-6 ps-md-3 pt-4 pt-md-0 mt-2 mt-md-0 border-mobile-top border-md-left d-flex flex-column align-items-center text-center">
+                                    <h5 class="fw-bold text-dark mb-3 d-flex flex-column align-items-center">
+                                        <span class="bg-light text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 32px; height: 32px;"><i class="bi bi-check2-all"></i></span>
+                                        <span class="fs-6 fw-bold" th:text="#{premium.guide.points}">選ぶポイント</span>
+                                    </h5>
+                                    <div class="d-flex flex-column gap-3 w-100">
+                                        <div class="d-flex flex-column align-items-center p-3 bg-light rounded-3">
+                                            <i class="bi bi-check-circle-fill text-success fs-5 mb-1"></i>
+                                            <div>
+                                                <strong class="d-block text-dark" th:text="#{premium.guide.shoes.point1.title}">ミドルカット以上</strong>
+                                                <span class="text-muted small" th:text="#{premium.guide.shoes.point1.desc}">足首をしっかりとホールドし、疲労時の捻挫を未然に防ぎます。</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center p-3 bg-light rounded-3">
+                                            <i class="bi bi-check-circle-fill text-success fs-5 mb-1"></i>
+                                            <div>
+                                                <strong class="d-block text-dark" th:text="#{premium.guide.shoes.point2.title}">防水透湿性 (GORE-TEX等)</strong>
+                                                <span class="text-muted small" th:text="#{premium.guide.shoes.point2.desc}">水たまりや泥、にわか雨から足を守り、汗蒸れは外へ逃がします。</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center p-3 bg-light rounded-3">
+                                            <i class="bi bi-check-circle-fill text-success fs-5 mb-1"></i>
+                                            <div>
+                                                <strong class="d-block text-dark" th:text="#{premium.guide.shoes.point3.title}">グリップ力の高い硬いソール</strong>
+                                                <span class="text-muted small" th:text="#{premium.guide.shoes.point3.desc}">不整地を歩く際、足裏への突き上げ負担を和らげ、確実に地面をグリップします。</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 全幅: Recommendation -->
+                            <div class="p-4 rounded-4 border position-relative mt-auto" style="background: linear-gradient(to bottom right, #ffffff, #f8f9fa);">
+                                <div class="position-absolute top-0 start-50 translate-middle w-100 text-center">
+                                    <span class="badge bg-dark px-3 py-2 shadow-sm rounded-pill"><i class="bi bi-award-fill text-warning me-1"></i><span th:text="#{premium.guide.badge.recommended}">公式おすすめモデル</span></span>
+                                </div>
+                                <div class="text-center mt-3 mb-4">
+                                    <h4 class="fw-bold text-dark mt-2" th:text="#{premium.guide.shoes.rec.title}">[キャラバン] C1_02S</h4>
+                                    <p class="small text-muted px-md-4" th:text="#{premium.guide.shoes.rec.desc}">日本人の足形に合わせて作られた、登山入門者の大定番モデル。つま先ゆったりで甲高幅広な足にも合いやすく、履きやすさと安心感は折り紙付きです。</p>
+                                </div>
+                                <a href="https://www.amazon.co.jp/s?k=%E3%82%AD%E3%83%A3%E3%83%A9%E3%83%90%E3%83%B3+C1_02S" target="_blank" rel="noopener noreferrer" class="amazon-btn btn btn-lg w-100 fw-bold shadow-sm d-flex align-items-center justify-content-center py-3 rounded-pill text-dark">
+                                    <i class="bi bi-cart4 fs-5 me-2"></i> <span th:text="#{premium.guide.check_amazon}">Amazonでチェック</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+
+                <!-- 2. バックパック -->
+                 <div class="carousel-item">
+                    <div class="card h-100 mx-auto border-0 shadow rounded-4 overflow-hidden border-top border-primary border-4 d-flex flex-column" style="min-height: 500px; max-width: 1200px;">
+                        <div class="bg-white px-4 py-4 border-bottom d-flex align-items-center">
+                            <div class="bg-primary text-white rounded-4 shadow-sm d-flex align-items-center justify-content-center me-3" style="width: 56px; height: 56px; background: linear-gradient(135deg, #0d6efd, #0a58ca) !important;">
+                                <i class="bi bi-briefcase fs-3"></i>
+                            </div>
+                            <div>
+                                <span class="badge bg-danger mb-1 shadow-sm"><i class="bi bi-star-fill me-1"></i><span th:text="#{premium.guide.badge.required}">必須</span></span>
+                                <h3 class="fw-bold text-dark mb-0 d-flex flex-column">
+                                    <span th:text="#{premium.guide.backpack.title}">バックパック</span> <span class="fs-6 text-muted fw-normal" th:text="#{premium.guide.backpack.subtitle}">(リュックサック)</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="card-body p-4 p-md-5 bg-white d-flex flex-column">
+                            
+                            <!-- なぜ必要と選ぶポイントをレスポンシブに（モバイルで縦並び） -->
+                            <div class="row mb-4 flex-grow-1">
+                                <!-- 左: なぜ必要なの？ -->
+                                <div class="col-12 col-md-6 pe-md-3 d-flex flex-column align-items-center text-center">
+                                    <h5 class="fw-bold text-dark mb-3 d-flex flex-column align-items-center">
+                                        <span class="bg-light text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 32px; height: 32px;"><i class="bi bi-question-lg"></i></span>
+                                        <span class="fs-6 fw-bold" th:text="#{premium.guide.why}">なぜ必要なの？</span>
+                                    </h5>
+                                    <p class="text-body-secondary small" th:text="#{premium.guide.backpack.why}">
+                                        防寒着や雨具、水筒などの必需品を快適に運ぶため。街用のリュックとは違い、荷重を分散させ疲れにくくする構造になっています。両手を常に空けておくことは登山の基本です。
+                                    </p>
+                                    <div class="mt-auto w-100 px-3 pb-2 d-none d-md-block">
+                                        <img th:src="@{/images/guide-backpack.png}" alt="バックパックのアニメ風イラスト: なぜ必要なのか" class="img-fluid rounded-3 shadow-sm border" style="max-height: 400px; object-fit: cover; width: 100%;">
+                                    </div>
+                                </div>
+                                
+                                <!-- 右: 選ぶポイント -->
+                                <div class="col-12 col-md-6 ps-md-3 pt-4 pt-md-0 mt-2 mt-md-0 border-mobile-top border-md-left d-flex flex-column align-items-center text-center">
+                                    <h5 class="fw-bold text-dark mb-3 d-flex flex-column align-items-center">
+                                        <span class="bg-light text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 32px; height: 32px;"><i class="bi bi-check2-all"></i></span>
+                                        <span class="fs-6 fw-bold" th:text="#{premium.guide.points}">選ぶポイント</span>
+                                    </h5>
+                                    <div class="d-flex flex-column gap-3 w-100">
+                                        <div class="d-flex flex-column align-items-center p-3 bg-light rounded-3">
+                                            <i class="bi bi-check-circle-fill text-primary fs-5 mb-1"></i>
+                                            <div>
+                                                <strong class="d-block text-dark" th:text="#{premium.guide.backpack.point1.title}">容量 20〜30L</strong>
+                                                <span class="text-muted small" th:text="#{premium.guide.backpack.point1.desc}">日帰り登山において、お弁当・雨具・防寒着などが丁度収まるベストサイズです。</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center p-3 bg-light rounded-3">
+                                            <i class="bi bi-check-circle-fill text-primary fs-5 mb-1"></i>
+                                            <div>
+                                                <strong class="d-block text-dark" th:text="#{premium.guide.backpack.point2.title}">腰ベルト（ヒップベルト）付き</strong>
+                                                <span class="text-muted small" th:text="#{premium.guide.backpack.point2.desc}">肩だけでなく腰や骨盤で重さを支えることで、肩への負担を劇的に減らします。</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center p-3 bg-light rounded-3">
+                                            <i class="bi bi-check-circle-fill text-primary fs-5 mb-1"></i>
+                                            <div>
+                                                <strong class="d-block text-dark" th:text="#{premium.guide.backpack.point3.title}">背面通気性</strong>
+                                                <span class="text-muted small" th:text="#{premium.guide.backpack.point3.desc}">背中とバックパックの間に隙間やメッシュがあり、汗を逃がして快適性を保ちます。</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 全幅: Recommendation -->
+                            <div class="p-4 rounded-4 mt-auto border position-relative" style="background: linear-gradient(to bottom right, #ffffff, #f8f9fa);">
+                                <div class="position-absolute top-0 start-50 translate-middle w-100 text-center">
+                                    <span class="badge bg-dark px-3 py-2 shadow-sm rounded-pill"><i class="bi bi-award-fill text-warning me-1"></i><span th:text="#{premium.guide.badge.recommended}">公式おすすめモデル</span></span>
+                                </div>
+                                <div class="text-center mt-3 mb-4">
+                                    <h4 class="fw-bold text-dark mt-2" th:text="#{premium.guide.backpack.rec.title}">[ミレー] サースフェー 30+5</h4>
+                                    <p class="small text-muted px-md-4" th:text="#{premium.guide.backpack.rec.desc}">「背負うのではなく着る」と言われるほどのフィット感。使いやすいポケット配置と、初心者から上級者まで満足させるオールラウンドな王道モデルです。</p>
+                                </div>
+                                <a href="https://www.amazon.co.jp/s?k=%E3%83%9F%E3%83%AC%E3%83%BC+%E3%82%B5%E3%83%BC%E3%82%B9%E3%83%95%E3%82%A7%E3%83%BC+30" target="_blank" rel="noopener noreferrer" class="amazon-btn btn btn-lg w-100 fw-bold shadow-sm d-flex align-items-center justify-content-center py-3 rounded-pill text-dark">
+                                    <i class="bi bi-cart4 fs-5 me-2"></i> <span th:text="#{premium.guide.check_amazon}">Amazonでチェック</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. レインウェア -->
+                <div class="carousel-item">
+                    <div class="card h-100 mx-auto border-0 shadow rounded-4 overflow-hidden border-top border-danger border-4 d-flex flex-column" style="min-height: 500px; max-width: 1200px;">
+                        <div class="bg-white px-4 py-4 border-bottom d-flex align-items-center">
+                            <div class="bg-danger text-white rounded-4 shadow-sm d-flex align-items-center justify-content-center me-3" style="width: 56px; height: 56px; background: linear-gradient(135deg, #dc3545, #c82333) !important;">
+                                <i class="bi bi-cloud-rain-fill fs-3"></i>
+                            </div>
+                            <div>
+                                <span class="badge bg-danger mb-1 shadow-sm"><i class="bi bi-star-fill me-1"></i><span th:text="#{premium.guide.badge.required}">必須</span></span>
+                                <h3 class="fw-bold text-dark mb-0 d-flex flex-column">
+                                    <span th:text="#{premium.guide.rainwear.title}">レインウェア</span> <span class="fs-6 text-muted fw-normal" th:text="#{premium.guide.rainwear.subtitle}">(上下セット)</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="card-body p-4 p-md-5 bg-white d-flex flex-column">
+                            
+                            <!-- なぜ必要と選ぶポイントをレスポンシブに（モバイルで縦並び） -->
+                            <div class="row mb-4 flex-grow-1">
+                                <!-- 左: なぜ必要なの？ -->
+                                <div class="col-12 col-md-6 pe-md-3 d-flex flex-column align-items-center text-center">
+                                    <h5 class="fw-bold text-dark mb-3 d-flex flex-column align-items-center">
+                                        <span class="bg-light text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 32px; height: 32px;"><i class="bi bi-question-lg"></i></span>
+                                        <span class="fs-6 fw-bold" th:text="#{premium.guide.why}">なぜ必要なの？</span>
+                                    </h5>
+                                    <p class="text-body-secondary small" th:text="#{premium.guide.rainwear.why}">
+                                        山の天気は変わりやすく、晴れ予報でも突然の雨に見舞われることがあります。標高が高い場所や風が吹く場所で体が濡れると、急激に体温を奪われ低体温症などの命に関わる危険を招くため、必ず携行する必要があります。
+                                    </p>
+                                    <div class="mt-auto w-100 px-3 pb-2 d-none d-md-block">
+                                        <img th:src="@{/images/guide-rainwear.png}" alt="レインウェアのアニメ風イラスト: なぜ必要なのか" class="img-fluid rounded-3 shadow-sm border" style="max-height: 400px; object-fit: cover; width: 100%;">
+                                    </div>
+                                </div>
+                                
+                                <!-- 右: 選ぶポイント -->
+                                <div class="col-12 col-md-6 ps-md-3 pt-4 pt-md-0 mt-2 mt-md-0 border-mobile-top border-md-left d-flex flex-column align-items-center text-center">
+                                    <h5 class="fw-bold text-dark mb-3 d-flex flex-column align-items-center">
+                                        <span class="bg-light text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 32px; height: 32px;"><i class="bi bi-check2-all"></i></span>
+                                        <span class="fs-6 fw-bold" th:text="#{premium.guide.points}">選ぶポイント</span>
+                                    </h5>
+                                    <div class="d-flex flex-column gap-3 w-100">
+                                        <div class="d-flex flex-column align-items-center p-3 bg-light rounded-3">
+                                            <i class="bi bi-check-circle-fill text-danger fs-5 mb-1"></i>
+                                            <div>
+                                                <strong class="d-block text-dark" th:text="#{premium.guide.rainwear.point1.title}">上下セパレート型</strong>
+                                                <span class="text-muted small" th:text="#{premium.guide.rainwear.point1.desc}">ポンチョは風で煽られたり、足元が濡れてしまうため登山には適しません。</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center p-3 bg-light rounded-3">
+                                            <i class="bi bi-check-circle-fill text-danger fs-5 mb-1"></i>
+                                            <div>
+                                                <strong class="d-block text-dark" th:text="#{premium.guide.rainwear.point2.title}">防水透湿素材 (GORE-TEX等)</strong>
+                                                <span class="text-muted small" th:text="#{premium.guide.rainwear.point2.desc}">外からの雨を防ぐと同時に、運動による内側の大量の汗（蒸れ）を外へ逃がす機能が必須です。</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-center p-3 bg-light rounded-3">
+                                            <i class="bi bi-check-circle-fill text-danger fs-5 mb-1"></i>
+                                            <div>
+                                                <strong class="d-block text-dark" th:text="#{premium.guide.rainwear.point3.title}">軽量・コンパクト</strong>
+                                                <span class="text-muted small" th:text="#{premium.guide.rainwear.point3.desc}">実際には使わない（晴れている）日も多いため、持ち運びのしやすさも重要です。</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 全幅: Recommendation -->
+                            <div class="p-4 rounded-4 mt-auto border position-relative" style="background: linear-gradient(to bottom right, #ffffff, #f8f9fa);">
+                                <div class="position-absolute top-0 start-50 translate-middle w-100 text-center">
+                                    <span class="badge bg-dark px-3 py-2 shadow-sm rounded-pill"><i class="bi bi-award-fill text-warning me-1"></i><span th:text="#{premium.guide.badge.recommended}">公式おすすめモデル</span></span>
+                                </div>
+                                <div class="text-center mt-3 mb-4">
+                                    <h4 class="fw-bold text-dark mt-2" th:text="#{premium.guide.rainwear.rec.title}">[モンベル] ストームクルーザー</h4>
+                                    <p class="small text-muted px-md-4" th:text="#{premium.guide.rainwear.rec.desc}">GORE-TEXを採用し、軽量・高機能でトップクラスの性能を持ちながら、価格も抑えられた「登山者の所有率No.1」と言われる傑作モデルです。</p>
+                                </div>
+                                <a href="https://www.amazon.co.jp/s?k=%E3%83%A2%E3%83%B3%E3%83%99%E3%83%AB+%E3%82%B9%E3%83%88%E3%83%BC%E3%83%A0%E3%82%AF%E3%83%AB%E3%83%BC%E3%82%B6%E3%83%BC" target="_blank" rel="noopener noreferrer" class="amazon-btn btn btn-lg w-100 fw-bold shadow-sm d-flex align-items-center justify-content-center py-3 rounded-pill text-dark">
+                                    <i class="bi bi-cart4 fs-5 me-2"></i> <span th:text="#{premium.guide.check_amazon}">Amazonでチェック</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            </div>
+            
+            <!-- ナビゲーションボタン (矢印) -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#gearCarousel" data-bs-slide="prev" style="width: 5%;">
+                <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1) grayscale(100); width: 3rem; height: 3rem;"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#gearCarousel" data-bs-slide="next" style="width: 5%;">
+                <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1) grayscale(100); width: 3rem; height: 3rem;"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+            
+        </div>
+
+    </main>
+
+    <div th:replace="~{fragments/common :: footer}"></div>
+    <div th:replace="~{fragments/common :: scripts}"></div>
+    
+    <!-- 簡単なアニメーション・レスポンシブ効果のための追加スタイル -->
+    <style>
+        @media (min-width: 768px) {
+            .border-md-left {
+                border-left: 1px solid #dee2e6 !important;
+            }
+        }
+        @media (max-width: 767.98px) {
+            .border-mobile-top {
+                border-top: 1px solid #dee2e6 !important;
+            }
+        }
+        .card {
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+        }
+        .amazon-btn {
+            background: linear-gradient(135deg, #f7ca00, #ffb300);
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .amazon-btn:hover {
+            background: linear-gradient(135deg, #fbd83b, #ffc02b);
+            transform: translateY(-2px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        }
+        .amazon-btn:active {
+            transform: scale(0.98) translateY(0);
+            box-shadow: none !important;
+        }
+    </style>
+</body>
+</html>

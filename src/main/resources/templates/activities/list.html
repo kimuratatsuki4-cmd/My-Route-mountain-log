@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('Activity Log - My Route &amp; Mountain Log')}">
+</head>
+<body>
+
+    <!-- Include Header Fragment -->
+    <div th:replace="~{fragments/common :: header}"></div>
+
+    <main class="container" style="padding-top: 50px; padding-bottom: 80px;">
+        
+        <!-- Stats Dashboard (Premium Only) -->
+        <div class="row g-4 mb-5" sec:authorize="hasRole('PREMIUM')">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-title" th:text="#{activity.list.stats.totalClimbs}">Total Climbs</div>
+                    <div class="stat-number" th:text="${stats.totalActivities}">0</div>
+                    <div class="stat-subtitle" th:text="#{activity.list.stats.activitiesRecorded}">Activities Recorded</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card accent">
+                    <div class="stat-title" th:text="#{activity.list.stats.totalElevation}">Total Elevation</div>
+                    <div class="stat-number"><span th:text="${stats.totalElevation}">0</span><span class="stat-subtitle ms-1">m</span></div>
+                    <div class="stat-subtitle" th:text="#{activity.list.stats.verticalGain}">Vertical Gain</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card info">
+                    <div class="stat-title" th:text="#{activity.list.stats.totalDistance}">Total Distance</div>
+                    <div class="stat-number"><span th:text="${#numbers.formatDecimal(stats.totalDistance, 1, 1)}">0.0</span><span class="stat-subtitle ms-1">km</span></div>
+                    <div class="stat-subtitle" th:text="#{activity.list.stats.distanceWalked}">Distance Walked</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yearly Trends Chart (Premium Only) -->
+        <div class="chart-card mb-5" sec:authorize="hasRole('PREMIUM')">
+            <div class="card-body">
+                <h5><i class="bi bi-graph-up me-2 text-accent"></i><span th:text="#{activity.list.yearlyTrends}">Yearly Trends</span></h5>
+                <div style="position: relative; height: 300px; margin-top: 20px;">
+                    <canvas id="yearlyTrendsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Header with Sort & New Button -->
+        <div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center align-items-start gap-3 mb-4">
+            <h2 th:text="#{activity.list.title}" class="mb-0">My Activity Log</h2>
+            
+            <div class="d-flex flex-wrap gap-2 gap-md-3 align-items-center w-100 justify-content-md-end">
+                <!-- Sort Dropdown -->
+                <form th:action="@{/activities}" method="get" class="d-flex align-items-center flex-grow-1 flex-md-grow-0">
+                    <label for="sort" class="me-2" style="white-space: nowrap; font-size: 0.8rem; color: var(--color-text-muted);" th:text="#{activity.list.sortBy}">Sort by:</label>
+                    <select name="sort" id="sort" class="form-select form-select-sm" onchange="this.form.submit()" style="min-width: 140px; width: auto;">
+                        <option value="date_desc" th:selected="${sort == 'date_desc'}" th:text="#{activity.list.sort.dateDesc}">Date (Newest)</option>
+                        <option value="date_asc" th:selected="${sort == 'date_asc'}" th:text="#{activity.list.sort.dateAsc}">Date (Oldest)</option>
+                        <option value="elevation_desc" th:selected="${sort == 'elevation_desc'}" th:text="#{activity.list.sort.elevDesc}">Max Elevation (High)</option>
+                        <option value="elevation_asc" th:selected="${sort == 'elevation_asc'}" th:text="#{activity.list.sort.elevAsc}">Max Elevation (Low)</option>
+                    </select>
+                </form>
+
+                <a th:href="@{/activities/new}" class="btn btn-accent text-nowrap mt-2 mt-md-0">
+                    <i class="bi bi-plus-lg me-1"></i> <span th:text="#{activity.list.record}">Record</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div th:if="${successMessage}" class="alert alert-success" role="alert">
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Activity List -->
+        <div class="row g-4">
+            <div class="col-12 col-sm-6 col-lg-4 d-flex justify-content-center" th:each="activity : ${activities}">
+                <div class="activity-card w-100" style="max-width: 450px;">
+                    <!-- Image -->
+                    <img th:if="${activity.imageName != null}" 
+                         th:src="@{|/images/${activity.imageName}|}" 
+                         class="card-img-top" alt="活動画像">
+                    <img th:unless="${activity.imageName != null}" 
+                         th:src="@{/images/no-image.png}" 
+                         class="card-img-top" alt="画像なし">
+
+                    <div class="card-body">
+                        <div class="card-meta">
+                            <i class="bi bi-calendar3 me-1"></i>
+                            <span th:text="${#dates.format(activity.activityDate, 'yyyy.MM.dd')}">2023/01/01</span>
+                            <span class="mx-2">|</span>
+                            <i class="bi bi-geo-alt me-1"></i>
+                            <span th:text="${activity.location}">Location</span>
+                            <th:block th:if="${activity.mountain != null}">
+                                <span class="mx-2">|</span>
+                                <i class="bi bi-geo-alt me-1"></i>
+                                <span th:text="${activity.mountain.name}">Mountain</span>
+                            </th:block>
+                        </div>
+                        <h5 class="card-title" th:text="${activity.title}">Activity Title</h5>
+                        
+                        <!-- Stats Summary -->
+                        <div class="card-stats" th:if="${activity.activityDetail != null}">
+                            <div class="stat-item" th:if="${activity.activityDetail.distanceKm != null}">
+                                <div class="stat-value"><span th:text="${activity.activityDetail.distanceKm}">0</span></div>
+                                <div class="stat-label" th:text="#{activity.card.distance}">Distance</div>
+                            </div>
+                            <div class="stat-item" th:if="${activity.activityDetail.elevationGain != null}">
+                                <div class="stat-value"><span th:text="${activity.activityDetail.elevationGain}">0</span></div>
+                                <div class="stat-label" th:text="#{activity.card.gain}">Gain</div>
+                            </div>
+                            <div class="stat-item" th:if="${activity.activityDetail.durationMinutes != null}">
+                                <div class="stat-value"><span th:text="${activity.activityDetail.durationMinutes}">0</span></div>
+                                <div class="stat-label" th:text="#{activity.card.time}">Time</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="@{/activities/{id}(id=${activity.activityId})}" class="btn-detail" th:text="#{activity.list.viewDetails}">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${activities == null or activities.isEmpty()}" class="empty-state">
+            <div class="empty-state-icon">
+                <i class="bi bi-journal-x"></i>
+            </div>
+            <h4 th:text="#{activity.list.empty.title}">No activities found.</h4>
+            <p th:text="#{activity.list.empty.subtitle}">Start by recording your first activity!</p>
+            <a th:href="@{/activities/new}" class="btn btn-primary-custom" th:text="#{activity.list.empty.cta}">Record Activity</a>
+        </div>
+
+    </main>
+
+    <!-- Include Footer Fragment -->
+    <div th:replace="~{fragments/common :: footer}"></div>
+
+    <!-- Include Scripts Fragment -->
+    <div th:replace="~{fragments/common :: scripts}"></div>
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 
+        折れ線グラフ描画スクリプト用設定データと外部スクリプトの読み込み
+    -->
+    <script th:inline="javascript">
+        // 外部のJavaScriptファイルにデータを渡すための設定オブジェクト
+        const chartConfig = {
+            yearlyStats: /*[[${yearlyStats}]]*/ [],
+            labelActivities: /*[[#{chart.activities}]]*/ 'Activities',
+            labelDistance: /*[[#{chart.distance}]]*/ 'Distance (km)',
+            labelElevation: /*[[#{chart.elevation}]]*/ 'Elevation (m)',
+            labelAxisLeft: /*[[#{chart.axisLeft}]]*/ 'Activities / Distance',
+            labelAxisRight: /*[[#{chart.axisRight}]]*/ 'Elevation (m)',
+            labelNoData: /*[[#{activity.list.noData}]]*/ 'No data available yet'
+        };
+    </script>
+    <script th:src="@{/js/yearly-trends-chart.js}"></script>
+</body>
+</html>

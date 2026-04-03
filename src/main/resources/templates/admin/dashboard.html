@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/common :: head(#{admin.menu.dashboard})}"></div>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-light">
+    <!-- Admin Navbar (Independent of frontend general user navbar) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" th:href="@{/admin/dashboard}">
+                <i class="bi bi-shield-lock-fill text-warning me-2"></i><span th:text="#{admin.menu.dashboard}">Admin Dashboard</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <!-- Mobile Navigation (Visible only on sm/md screens) -->
+                <ul class="navbar-nav d-md-none mb-2 border-bottom pb-2">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/admin/dashboard}"><i class="bi bi-house-door me-2"></i> <span th:text="#{admin.menu.dashboard}">ダッシュボード</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/admin/mountains}"><i class="bi bi-geo-alt me-2"></i> <span th:text="#{admin.menu.mountains}">山マスター管理</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/admin/users}"><i class="bi bi-people me-2"></i> <span th:text="#{admin.menu.users}">ユーザー管理</span></a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center gap-2">
+                    <!-- Language Switcher -->
+                    <li class="nav-item dropdown me-2">
+                        <a class="nav-link dropdown-toggle btn btn-sm btn-outline-secondary text-light border-0" href="#" id="adminLangDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe2 me-1"></i> <span th:text="#{lang.switch}">Language</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="adminLangDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="changeLang('en')" th:text="#{lang.en}">English</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLang('ja')" th:text="#{lang.ja}">Japanese</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link text-light"><i class="bi bi-person-badge me-1"></i> <span th:text="${#authentication.principal.user.username}">Admin</span>さん</span>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-light rounded-pill px-3" th:text="#{nav.logout}">ログアウト</button>
+                        </form>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <a th:href="@{/}" class="btn btn-sm btn-secondary rounded-pill px-3" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-white sidebar collapse shadow-sm" style="min-height: calc(100vh - 56px);">
+                <div class="position-sticky pt-4 px-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-2 text-muted fw-bold text-uppercase">
+                        <span>Menu</span>
+                    </h6>
+                    <ul class="nav flex-column mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link active bg-light bg-opacity-50 text-dark rounded fw-bold" aria-current="page" th:href="@{/admin/dashboard}">
+                                <i class="bi bi-house-door me-2 text-primary"></i> <span th:text="#{admin.menu.dashboard}">ダッシュボード</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mt-2">
+                            <a class="nav-link text-muted" th:href="@{/admin/mountains}">
+                                <i class="bi bi-geo-alt me-2"></i> <span th:text="#{admin.menu.mountains}">山マスター管理</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mt-2">
+                            <a class="nav-link text-muted" th:href="@{/admin/users}">
+                                <i class="bi bi-people me-2"></i> <span th:text="#{admin.menu.users}">ユーザー管理</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-5 py-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                    <h1 class="h2 fw-bold" th:text="#{admin.dashboard.overview}">概要・統計 (Overview)</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.reload();">
+                                <i class="bi bi-arrow-clockwise me-1"></i> <span th:text="#{admin.dashboard.refresh}">更新</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 mb-5">
+                    <!-- Total Users Card -->
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                            <div class="card-body p-4 position-relative">
+                                <div class="text-muted small fw-bold text-uppercase mb-2" th:text="#{admin.dashboard.total_users}">総ユーザー数</div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <h2 class="fw-bold mb-0 me-2" th:text="${totalUsers}">1,024</h2>
+                                    <span class="text-success small"><i class="bi bi-arrow-up-short"></i></span>
+                                </div>
+                                <div class="text-muted small border-top pt-2 mt-3" th:text="#{admin.dashboard.premium_users(${premiumUsers})}">うちプレミアム会員: 128 名</div>
+                                <i class="bi bi-people position-absolute text-light" style="font-size: 5rem; top: -10px; right: -10px; opacity: 0.4;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Mountains Card -->
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                            <div class="card-body p-4 position-relative">
+                                <div class="text-muted small fw-bold text-uppercase mb-2" th:text="#{admin.dashboard.total_mountains}">登録山数 (マスター)</div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <h2 class="fw-bold mb-0 me-2 text-success" th:text="${totalMountains}">150</h2>
+                                </div>
+                                <div class="text-muted small border-top pt-2 mt-3">Active records</div>
+                                <i class="bi bi-geo-fill position-absolute text-light" style="font-size: 5rem; top: -10px; right: -10px; opacity: 0.4;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities Card -->
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                            <div class="card-body p-4 position-relative">
+                                <div class="text-muted small fw-bold text-uppercase mb-2" th:text="#{admin.dashboard.recent_activities}">直近の活動投稿 (過去7日)</div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <h2 class="fw-bold mb-0 me-2 text-primary" th:text="${recentActivities}">42</h2>
+                                    <span class="text-success small" th:text="#{admin.dashboard.recent_activities.unit}">件</span>
+                                </div>
+                                <div class="text-muted small border-top pt-2 mt-3">Activities recorded</div>
+                                <i class="bi bi-journal-text position-absolute text-light" style="font-size: 5rem; top: -10px; right: -10px; opacity: 0.4;"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Status Card -->
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 bg-primary text-white overflow-hidden">
+                            <div class="card-body p-4 position-relative">
+                                <div class="text-white-50 small fw-bold text-uppercase mb-2" th:text="#{admin.dashboard.sys_status}">システムステータス</div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <h2 class="fw-bold mb-0 me-2">Healthy</h2>
+                                </div>
+                                <div class="text-white-50 small border-top border-light border-opacity-25 pt-2 mt-3 d-flex align-items-center">
+                                    <span class="spinner-grow spinner-grow-sm text-success me-2" role="status" aria-hidden="true"></span>
+                                    <span th:text="#{admin.dashboard.sys_status.healthy}">Online &amp; Running</span>
+                                </div>
+                                <i class="bi bi-server position-absolute text-white" style="font-size: 5rem; top: -10px; right: -10px; opacity: 0.1;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chart Area -->
+                <div class="card border-0 shadow-sm rounded-4 mb-5">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4" th:text="#{admin.dashboard.sales.title}">売上予測グラフ (過去実績 + 将来予測)</h5>
+                        <canvas id="salesChart" height="100"></canvas>
+                        
+                        <!-- JSONデータの埋め込み -->
+                        <script th:inline="javascript">
+                            /*<![CDATA[*/
+                            document.addEventListener("DOMContentLoaded", function() {
+                                var salesData = /*[[${salesData}]]*/ {labels:[], actual:[], forecast:[]};
+                                
+                                // メッセージの取得
+                                var labelActual = /*[[#{admin.dashboard.sales.actual}]]*/ '実績';
+                                var labelForecast = /*[[#{admin.dashboard.sales.forecast}]]*/ '予測';
+                                
+                                var ctx = document.getElementById('salesChart').getContext('2d');
+                                var myChart = new Chart(ctx, {
+                                    type: 'line',
+                                    data: {
+                                        labels: salesData.labels,
+                                        datasets: [
+                                            {
+                                                label: labelActual,
+                                                data: salesData.actual,
+                                                borderColor: 'rgba(54, 162, 235, 1)',
+                                                backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                                                borderWidth: 2,
+                                                tension: 0.4,
+                                                fill: true,
+                                                spanGaps: true
+                                            },
+                                            {
+                                                label: labelForecast,
+                                                data: salesData.forecast,
+                                                borderColor: 'rgba(255, 159, 64, 1)',
+                                                backgroundColor: 'transparent',
+                                                borderWidth: 2,
+                                                borderDash: [5, 5], // 点線
+                                                tension: 0.4,
+                                                fill: false,
+                                                spanGaps: true
+                                            }
+                                        ]
+                                    },
+                                    options: {
+                                        responsive: true,
+                                        plugins: {
+                                            legend: {
+                                                position: 'top',
+                                            }
+                                        },
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true,
+                                                ticks: {
+                                                    callback: function(value) {
+                                                        return '¥' + value.toLocaleString();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            });
+                            /*]]>*/
+                        </script>
+                    </div>
+                </div>
+
+                <div class="alert alert-info border-0 shadow-sm rounded-4 p-4 row align-items-center">
+                    <div class="col-auto">
+                        <i class="bi bi-info-circle-fill text-info" style="font-size: 2rem;"></i>
+                    </div>
+                    <div class="col">
+                        <h5 class="fw-bold text-dark mb-1" th:text="#{admin.dashboard.welcome.title}">ようこそ、管理者ダッシュボードへ</h5>
+                        <p class="mb-0 text-muted" th:text="#{admin.dashboard.welcome.desc}">左記のサイドメニューより各機能へアクセスいただけます。</p>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Script Fragment Integration -->
+    <div th:replace="~{fragments/common :: scripts}"></div>
+</body>
+</html>

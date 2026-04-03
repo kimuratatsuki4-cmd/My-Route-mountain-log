@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head(#{auth.register.title} + ' - My Route &amp; Mountain Log')}">
+</head>
+<body class="auth-page">
+
+    <main>
+        <div class="auth-card" style="max-width: 520px;">
+            <div class="card-body">
+                <h1 th:text="#{auth.register.title}">Create Account</h1>
+                <p class="auth-subtitle" th:text="#{auth.register.subtitle}">Let's start recording your adventures</p>
+
+                <!-- Global Error Message -->
+                <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+
+                <form th:action="@{/auth/register}" th:object="${userRegistrationForm}" method="post" class="needs-validation" novalidate>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label" th:text="#{auth.register.label.username}">Username (Display Name)</label>
+                        <input type="text" class="form-control" id="username" th:field="*{username}" placeholder="Username" 
+                               th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label" th:text="#{auth.register.label.email}">Email Address</label>
+                        <input type="email" class="form-control" id="email" th:field="*{email}" placeholder="name@example.com"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="password" class="form-label" th:text="#{auth.register.label.password}">Password</label>
+                            <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="Password"
+                                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="passwordConfirmation" class="form-label" th:text="#{auth.register.label.passwordConfirm}">Password (Confirm)</label>
+                            <input type="password" class="form-control" id="passwordConfirmation" th:field="*{passwordConfirmation}" placeholder="Confirm"
+                                   th:classappend="${#fields.hasErrors('passwordConfirmation')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('passwordConfirmation')}" th:errors="*{passwordConfirmation}"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label" th:text="#{auth.register.label.address}">Address</label>
+                        <input type="text" class="form-control" id="address" th:field="*{address}" placeholder="Address"
+                               th:classappend="${#fields.hasErrors('address')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="birthDate" class="form-label" th:text="#{auth.register.label.birthDate}">Birth Date</label>
+                        <input type="date" class="form-control" id="birthDate" th:field="*{birthDate}"
+                               th:classappend="${#fields.hasErrors('birthDate')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="experienceLevel" class="form-label" th:text="#{auth.register.label.experience}">Climbing Experience</label>
+                        <select class="form-select" id="experienceLevel" th:field="*{experienceLevel}" 
+                                th:classappend="${#fields.hasErrors('experienceLevel')} ? 'is-invalid'">
+                            <option value="" selected th:text="#{auth.register.option.select}">Please select</option>
+                            <option value="BEGINNER" th:text="#{auth.register.option.beginner}">Beginner</option>
+                            <option value="INTERMEDIATE" th:text="#{auth.register.option.intermediate}">Intermediate</option>
+                            <option value="ADVANCED" th:text="#{auth.register.option.advanced}">Advanced</option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('experienceLevel')}" th:errors="*{experienceLevel}"></div>
+                    </div>
+
+                    <button class="btn btn-primary-custom w-100" type="submit" th:text="#{auth.register.submit}">Register</button>
+                    
+                    <div style="border-top: 1px solid var(--color-border-light); margin-top: 28px; padding-top: 24px; text-align: center;">
+                        <p style="margin-bottom: 8px; font-size: 0.85rem;"><span th:text="#{auth.register.hasAccount}">Already have an account?</span> <a th:href="@{/auth/login}" style="color: var(--color-primary); font-weight: 500;" th:text="#{auth.register.signinLink}">Sign in</a></p>
+                        <p style="margin-bottom: 0;"><a th:href="@{/}" style="color: var(--color-text-muted); font-size: 0.8rem;" th:text="#{auth.register.backHome}">Back to Home</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 言語切替（登録ページはナビバーなし） -->
+        <div class="text-center mt-4" style="font-size: 0.8rem;">
+            <a th:href="@{/auth/register(lang='en')}" style="color: var(--color-text-muted);">English</a>
+            <span style="color: var(--color-border); margin: 0 8px;">|</span>
+            <a th:href="@{/auth/register(lang='ja')}" style="color: var(--color-text-muted);">日本語</a>
+        </div>
+    </main>
+    
+    <div th:replace="~{fragments/common :: scripts}"></div>
+</body>
+</html>

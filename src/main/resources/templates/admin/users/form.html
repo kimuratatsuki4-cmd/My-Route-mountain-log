@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ユーザー編集 - My Route &amp; Mountain Log</title>
+    <!-- CSS integration identical to dashboard -->
+    <th:block th:replace="~{fragments/common :: head('ユーザー編集 - My Route &amp; Mountain Log')}"></th:block>
+</head>
+<body class="bg-light">
+    <!-- Admin Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" th:href="@{/admin/dashboard}">
+                <i class="bi bi-shield-lock-fill text-warning me-2"></i><span th:text="#{admin.menu.dashboard}">Admin Dashboard</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <!-- Mobile Navigation (Visible only on sm/md screens) -->
+                <ul class="navbar-nav d-md-none mb-2 border-bottom pb-2">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/admin/dashboard}"><i class="bi bi-house-door me-2"></i> <span th:text="#{admin.menu.dashboard}">ダッシュボード</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/admin/mountains}"><i class="bi bi-geo-alt me-2"></i> <span th:text="#{admin.menu.mountains}">山マスター管理</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" th:href="@{/admin/users}"><i class="bi bi-people me-2"></i> <span th:text="#{admin.menu.users}">ユーザー管理</span></a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center gap-2">
+                    <!-- Language Switcher -->
+                    <li class="nav-item dropdown me-2">
+                        <a class="nav-link dropdown-toggle btn btn-sm btn-outline-secondary text-light border-0" href="#" id="adminLangDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe2 me-1"></i> <span th:text="#{lang.switch}">Language</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="adminLangDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="changeLang('en')" th:text="#{lang.en}">English</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="changeLang('ja')" th:text="#{lang.ja}">Japanese</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link text-light"><i class="bi bi-person-badge me-1"></i> <span th:text="${#authentication.principal.user.username}">Admin</span>さん</span>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-light rounded-pill px-3" th:text="#{nav.logout}">ログアウト</button>
+                        </form>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <a th:href="@{/}" class="btn btn-sm btn-secondary rounded-pill px-3" target="_blank"><i class="bi bi-box-arrow-up-right"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-white sidebar collapse shadow-sm" style="min-height: calc(100vh - 56px);">
+                <div class="position-sticky pt-4 px-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-2 text-muted fw-bold text-uppercase">
+                        <span>Menu</span>
+                    </h6>
+                    <ul class="nav flex-column mb-4">
+                        <li class="nav-item">
+                            <a class="nav-link text-muted" th:href="@{/admin/dashboard}">
+                                <i class="bi bi-house-door me-2"></i> <span th:text="#{admin.menu.dashboard}">ダッシュボード</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mt-2">
+                            <a class="nav-link text-muted" th:href="@{/admin/mountains}">
+                                <i class="bi bi-geo-alt me-2"></i> <span th:text="#{admin.menu.mountains}">山マスター管理</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mt-2">
+                            <a class="nav-link active bg-light bg-opacity-50 text-dark rounded fw-bold" aria-current="page" th:href="@{/admin/users}">
+                                <i class="bi bi-people me-2 text-primary"></i> <span th:text="#{admin.menu.users}">ユーザー管理</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-5 py-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
+                    <h1 class="h2 fw-bold" th:text="${adminUserForm.userId == null ? 'ユーザー新規登録' : 'ユーザー編集'}">ユーザー編集</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a th:href="@{/admin/users}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> 一覧へ戻る
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 mb-5">
+                    <div class="card-body p-4 p-md-5">
+                        
+                        <form th:action="${adminUserForm.userId == null ? '/admin/users/create' : '/admin/users/' + adminUserForm.userId + '/update'}" 
+                              th:object="${adminUserForm}" method="post">
+                            
+                            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger" role="alert">
+                                <ul class="mb-0">
+                                    <li th:each="err : ${#fields.globalErrors()}" th:text="${err}">Global Error</li>
+                                </ul>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label for="username" class="form-label fw-bold">ユーザー名 <span class="badge bg-danger ms-1">必須</span></label>
+                                    <input type="text" class="form-control" id="username" th:field="*{username}" th:errorclass="is-invalid" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">エラーメッセージ</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label fw-bold">メールアドレス <span class="badge bg-danger ms-1">必須</span></label>
+                                    <input type="email" class="form-control" id="email" th:field="*{email}" th:errorclass="is-invalid" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">エラーメッセージ</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="password" class="form-label fw-bold">
+                                        パスワード 
+                                        <span th:if="${adminUserForm.userId == null}" class="badge bg-danger ms-1">必須</span>
+                                        <span th:unless="${adminUserForm.userId == null}" class="badge bg-secondary ms-1">任意</span>
+                                    </label>
+                                    <input type="password" class="form-control" id="password" th:field="*{password}" th:errorclass="is-invalid" placeholder="変更する場合のみ入力">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">エラーメッセージ</div>
+                                    <div class="form-text" th:if="${adminUserForm.userId != null}">空白のままにすると現在のパスワードが維持されます。</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="roleId" class="form-label fw-bold">権限 <span class="badge bg-danger ms-1">必須</span></label>
+                                    <select class="form-select" id="roleId" th:field="*{roleId}" th:errorclass="is-invalid">
+                                        <option value="">選択してください</option>
+                                        <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name == 'ROLE_ADMIN' ? '管理者 (ROLE_ADMIN)' : (role.name == 'ROLE_PREMIUM' ? '有料会員 (ROLE_PREMIUM)' : '無料会員 (ROLE_GENERAL)')}"></option>
+                                    </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('roleId')}" th:errors="*{roleId}">エラーメッセージ</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-check form-switch mt-3">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="enabled" th:field="*{enabled}">
+                                        <label class="form-check-label fw-bold text-success" for="enabled"><i class="bi bi-person-check-fill me-1"></i>アカウントを有効にする</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 text-end border-top pt-4">
+                                <a th:href="@{/admin/users}" class="btn btn-light me-2">キャンセル</a>
+                                <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">
+                                    <i class="bi bi-check-circle me-1"></i> <span th:text="${adminUserForm.userId == null ? '登録する' : '保存する'}">保存する</span>
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Script Fragment Integration -->
+    <div th:replace="~{fragments/common :: scripts}"></div>
+</body>
+</html>

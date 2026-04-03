@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:replace="~{fragments/common :: head('Upgrade to Premium')}"></div>
+</head>
+<body>
+    <div th:replace="~{fragments/common :: header}"></div>
+
+    <main class="container my-5" style="max-width: 800px;">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <h2 class="text-center mb-4" style="color: var(--color-primary); font-weight: 700;">
+                    <i class="bi bi-star-fill me-2"></i><span th:text="#{subscription.register.title}">Upgrade to Premium</span>
+                </h2>
+                
+                <p class="text-center lead mb-5" th:text="#{subscription.register.subtitle}">Unlock advanced features and support our platform for just ¥500/month.</p>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold" th:text="#{subscription.register.feature1.title}">Unlimited Logs</h5>
+                                <p class="card-text text-muted" th:text="#{subscription.register.feature1.desc}">Keep unlimited activity logs forever.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold" th:text="#{subscription.register.feature2.title}">Advanced Stats</h5>
+                                <p class="card-text text-muted" th:text="#{subscription.register.feature2.desc}">Detailed analytics about your mountain climbing.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <form th:action="@{/subscription/create}" method="post">
+                        <button type="submit" id="checkout-button" class="btn btn-outline-primary btn-lg px-5 py-3 rounded-pill fw-bold w-100">
+                            <span th:text="#{subscription.register.btn.checkout}">Proceed to Payment (Stripe Checkout)</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/common :: footer}"></div>
+    <div th:replace="~{fragments/common :: scripts}"></div>
+</body>
+</html>

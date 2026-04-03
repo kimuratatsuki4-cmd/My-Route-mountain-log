@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title}">My Route &amp; Mountain Log</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header th:fragment="header">
+        <nav class="navbar navbar-expand-lg site-navbar">
+            <div class="container-fluid">
+                <a class="navbar-brand" th:href="@{/}" th:text="#{app.name}">My Route &amp; Mountain Log</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <!-- ログイン時のみ表示 -->
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link" th:href="@{/activities}" th:text="#{nav.activity.list}">Activity List</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link" th:href="@{/mountains}" th:text="#{nav.mountain.list}">Mountain List</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link" th:href="@{/activities/new}" th:text="#{nav.activity.create}">Create</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="isAuthenticated()">
+                            <a class="nav-link" th:href="@{/user}" th:text="#{nav.user.info}">User Info</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasRole('ROLE_PREMIUM')">
+                            <a class="nav-link" th:href="@{/premium/gear-guide}" th:text="#{nav.premium.gear-guide}">the three sacred treasures</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasRole('ROLE_GENERAL')">
+                            <a class="nav-link" th:href="@{/subscription/register}" th:text="#{nav.subscription.register}">Upgrade to Premium</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasRole('ROLE_PREMIUM')">
+                            <a class="nav-link" th:href="@{/subscription/cancel}" th:text="#{nav.subscription.cancel}">Cancel Subscription</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+                            <a class="nav-link" th:href="@{/admin/dashboard}" th:text="#{nav.admin.dashboard}">Admin Dashboard</a>
+                        </li>
+                    </ul>
+                    <!-- 右側: 言語切替, 未ログイン/ログイン時の要素 -->
+                    <div class="navbar-nav ms-auto d-flex align-items-lg-center gap-3 mt-3 mt-lg-0">
+
+                        <!--
+                            言語切替ドロップダウン
+                            Thymeleaf 3.1+（Spring Boot 3）では #request オブジェクトがデフォルトで無効化されているため、
+                            JavaScript で現在のURLに ?lang= パラメータを動的に付与する方式を採用。
+                            changeLang() 関数はページ下部の scripts フラグメント後に定義。
+                        -->
+                        <div class="lang-switcher">
+                            <div class="dropdown">
+                                <button class="btn btn-sm dropdown-toggle w-100 text-start text-lg-center" type="button" id="langDropdown"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-globe2 me-1"></i> <span th:text="#{lang.switch}">Language</span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="langDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="changeLang('en')" th:text="#{lang.en}">English</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="changeLang('ja')" th:text="#{lang.ja}">Japanese</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 未ログイン時 -->
+                        <div sec:authorize="isAnonymous()" class="d-flex flex-column flex-lg-row gap-2 w-100">
+                            <a th:href="@{/auth/login}" class="btn nav-btn-outline w-100 w-lg-auto" style="min-width: 150px;" th:text="#{nav.login}">Login</a>
+                            <a th:href="@{/auth/register}" class="btn nav-btn-filled w-100 w-lg-auto" style="min-width: 150px;" th:text="#{nav.signup}">Sign up</a>
+                        </div>
+                        <!-- ログイン時 -->
+                        <div sec:authorize="isAuthenticated()" class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-3 w-100 pb-3 pb-lg-0">
+                            <span class="text-muted" style="font-size: 0.8rem;">
+                                Welcome, <span sec:authentication="principal.username" class="fw-bold" style="color: var(--color-primary);">User</span>
+                            </span>
+                            <form th:action="@{/logout}" method="post" class="d-block w-100 w-lg-auto">
+                                <button type="submit" class="btn nav-btn-outline w-100 w-lg-auto" th:text="#{nav.logout}">Logout</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Footer -->
+    <th:block th:fragment="footer">
+        <!-- Spacer for fixed footer -->
+        <div style="height: 120px;"></div>
+        <footer class="site-footer">
+            <div class="container text-center">
+                <p th:text="#{footer.copyright}">&copy; 2026 My Route &amp; Mountain Log. All rights reserved.</p>
+            </div>
+        </footer>
+    </th:block>
+
+    <!-- Scripts -->
+    <div th:fragment="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+                crossorigin="anonymous"></script>
+        
+        <!-- 言語切替関数の外部スクリプト -->
+        <script th:src="@{/js/language-switcher.js}"></script>
+    </div>
+
+</body>
+</html>

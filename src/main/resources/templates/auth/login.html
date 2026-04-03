@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head(#{auth.login.title} + ' - My Route &amp; Mountain Log')}">
+</head>
+<body class="auth-page">
+
+    <main>
+        <div class="auth-card">
+            <div class="card-body">
+                <h1 th:text="#{auth.login.title}">Please sign in</h1>
+                <p class="auth-subtitle" th:text="#{auth.login.subtitle}">My Route &amp; Mountain Log</p>
+
+                <!-- Messages -->
+                <div th:if="${param.error}" class="alert alert-danger" role="alert" th:text="#{auth.login.error}">
+                    Incorrect email address or password.
+                </div>
+                <div th:if="${param.logout}" class="alert alert-info" role="alert" th:text="#{auth.login.logout}">
+                    You have been logged out.
+                </div>
+                <!-- RedirectAttributesで渡されたメッセージを表示 -->
+                <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                    <span th:text="${successMessage}"></span>
+                </div>
+
+                <form th:action="@{/auth/login}" method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label" th:text="#{auth.login.label.email}">Email address</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="name@example.com" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label" th:text="#{auth.login.label.password}">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                    </div>
+
+                    <button class="btn btn-primary-custom w-100" type="submit" th:text="#{auth.login.submit}">Sign in</button>
+                    
+                    <div style="border-top: 1px solid var(--color-border-light); margin-top: 28px; padding-top: 24px; text-align: center;">
+                        <p style="margin-bottom: 8px; font-size: 0.85rem;"><span th:text="#{auth.login.noAccount}">Don't have an account?</span> <a th:href="@{/auth/register}" style="color: var(--color-primary); font-weight: 500;" th:text="#{auth.login.signupLink}">Sign up</a></p>
+                        <p style="margin-bottom: 0;"><a th:href="@{/}" style="color: var(--color-text-muted); font-size: 0.8rem;" th:text="#{auth.login.backHome}">Back to Home</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 言語切替（ログインページはナビバーなし） -->
+        <div class="text-center mt-4" style="font-size: 0.8rem;">
+            <a th:href="@{/auth/login(lang='en')}" style="color: var(--color-text-muted);">English</a>
+            <span style="color: var(--color-border); margin: 0 8px;">|</span>
+            <a th:href="@{/auth/login(lang='ja')}" style="color: var(--color-text-muted);">日本語</a>
+        </div>
+    </main>
+    
+    <div th:replace="~{fragments/common :: scripts}"></div>
+</body>
+</html>

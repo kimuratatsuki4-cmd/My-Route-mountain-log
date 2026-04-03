@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/common :: head(#{user.profile.title} + ' - My Route &amp; Mountain Log')}"></th:block>
+</head>
+<body>
+
+    <!-- Include Header Fragment -->
+    <div th:replace="~{fragments/common :: header}"></div>
+
+    <main class="container" style="padding-top: 50px; padding-bottom: 80px;">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="profile-card">
+                    <div class="card-header text-center">
+                        <i class="bi bi-person-circle" style="font-size: 2.5rem; opacity: 0.7;"></i>
+                        <h2 style="font-size: 1.2rem; font-weight: 400; letter-spacing: 0.06em; margin-top: 12px; color: rgba(255,255,255,0.9);" th:text="#{user.profile.title}">User Profile</h2>
+                    </div>
+                    <div class="card-body">
+                        
+                        <!-- Success Message -->
+                        <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+
+                        <!-- Profile Info Table -->
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr style="border-bottom: 1px solid var(--color-border-light);">
+                                <td style="padding: 16px 0; width: 35%; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; color: var(--color-text-muted); text-transform: uppercase;" th:text="#{user.profile.username}">User Name</td>
+                                <td style="padding: 16px 0; font-size: 0.9rem;" th:text="${user.username}">User Name</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--color-border-light);">
+                                <td style="padding: 16px 0; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; color: var(--color-text-muted); text-transform: uppercase;" th:text="#{user.profile.email}">Email</td>
+                                <td style="padding: 16px 0; font-size: 0.9rem;" th:text="${user.email}">user@example.com</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--color-border-light);">
+                                <td style="padding: 16px 0; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; color: var(--color-text-muted); text-transform: uppercase;" th:text="#{user.profile.role}">Role</td>
+                                <td style="padding: 16px 0; font-size: 0.9rem;" th:text="${user.role.name == 'ROLE_ADMIN' ? '管理者' : (user.role.name == 'ROLE_PREMIUM' ? '有料会員' : '一般会員')}">ROLE_GENERAL</td>
+                            </tr>
+                            <!-- Premium User Payment Info -->
+                            <tr th:if="${user.role.name == 'ROLE_PREMIUM'}" style="border-bottom: 1px solid var(--color-border-light);">
+                                <td style="padding: 16px 0; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; color: var(--color-text-muted); text-transform: uppercase;" th:text="#{user.profile.paymentInfo}">お支払い情報</td>
+                                <td style="padding: 16px 0; font-size: 0.9rem;">
+                                    <p style="margin-bottom: 6px;"><span th:text="#{user.profile.premiumPlan}">有料プラン利用中</span></p>
+                                    <a th:href="@{/subscription/edit}" class="btn btn-sm btn-outline-primary mt-2 rounded-pill px-3">
+                                        <i class="bi bi-credit-card me-1"></i> <span th:text="#{user.creditCard.edit}"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--color-border-light);">
+                                <td style="padding: 16px 0; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; color: var(--color-text-muted); text-transform: uppercase; vertical-align: top;" th:text="#{user.profile.detailInfo}">Detail Info</td>
+                                <td style="padding: 16px 0; font-size: 0.9rem;">
+                                    <p style="margin-bottom: 6px;"><span style="font-weight: 600;" th:text="#{user.profile.address}">Address:</span> <span th:text="${user.address} ?: #{user.profile.notSet}"></span></p>
+                                    <p style="margin-bottom: 6px;"><span style="font-weight: 600;" th:text="#{user.profile.birthDate}">Birth Date:</span> <span th:text="${user.birthDate} ?: #{user.profile.notSet}"></span></p>
+                                    <p style="margin-bottom: 0;"><span style="font-weight: 600;" th:text="#{user.profile.experience}">Experience Level:</span> <span th:text="${user.experienceLevel} ?: #{user.profile.notSet}"></span></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 16px 0; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; color: var(--color-text-muted); text-transform: uppercase;" th:text="#{user.profile.registrationDate}">Registration Date</td>
+                                <td style="padding: 16px 0; font-size: 0.9rem;" th:text="${#calendars.format(user.createdAt, 'yyyy/MM/dd HH:mm')}">2023/01/01 10:00</td>
+                            </tr>
+                        </table>
+
+                        <div class="text-center" style="margin-top: 30px;">
+                            <a th:href="@{/user/edit}" class="btn btn-primary-custom">
+                                <i class="bi bi-pencil-square me-2"></i><span th:text="#{user.profile.edit}">Edit Profile</span>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Include Footer Fragment -->
+    <div th:replace="~{fragments/common :: footer}"></div>
+
+    <!-- Include Scripts Fragment -->
+    <div th:replace="~{fragments/common :: scripts}"></div>
+</body>
+</html>
