@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 @Service
@@ -278,10 +281,11 @@ public class ActivityService {
      * ユーザーのランダムな活動履歴を指定件数取得します。
      */
     public List<Activity> getRandomActivities(User user, int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
         if (user == null || user.getUserId() == null) {
             return List.of();
         }
-        return activityRepository.findRandomActivitiesByUser(user.getUserId(), limit);
+        return activityRepository.findRandomActivitiesByUser(user.getUserId(), pageable);
     }
 
     // UUIDを使って生成したファイル名を返す

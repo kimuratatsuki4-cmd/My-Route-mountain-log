@@ -5,8 +5,11 @@ import com.example.mountainlog.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Integer> {
@@ -50,8 +53,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Integer> {
 
     // ユーザーの活動のうち、山が紐付いているものを取得
     List<Activity> findByUserAndMountainNotNull(User user);
-    
+
     // ユーザーのランダムな活動履歴を取得 (MySQL/H2対応)
-    @Query(value = "SELECT * FROM activities WHERE user_id = :userId ORDER BY RAND() LIMIT :limit", nativeQuery = true)
-    List<Activity> findRandomActivitiesByUser(Integer userId, Integer limit);
+    @Query(value = "SELECT * FROM activities WHERE user_id = :userId ORDER BY RAND()", nativeQuery = true)
+    List<Activity> findRandomActivitiesByUser(@Param("userId") Integer userId, Pageable pageable);
 }
